@@ -1,0 +1,26 @@
+.recordings-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+}
+
+.recordings-content {
+  flex: 1;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.recordings-content h1 {
+  margin: 0 0 24px;
+  font-size: 24px;
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .recordings-content {
+    padding: 16px;
+  }
+}

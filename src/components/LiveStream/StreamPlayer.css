@@ -1,0 +1,17 @@
+.stream-player {
+  width: 100%;
+  background: var(--bg-tertiary);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.video-element {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 70vh;
+}
+
+.video-element::-webkit-media-controls {
+  background: rgba(0, 0, 0, 0.7);
+}

@@ -1,0 +1,44 @@
+.live-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+}
+
+.live-content {
+  flex: 1;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.live-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.live-header h1 {
+  margin: 0;
+  font-size: 24px;
+  color: var(--text-primary);
+}
+
+.live-player-wrapper {
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .live-content {
+    padding: 16px;
+  }
+
+  .live-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

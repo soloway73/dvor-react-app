@@ -1,0 +1,30 @@
+.recordings-list {
+  padding: 20px;
+  position: relative;
+}
+
+.recordings {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.empty {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius);
+}
+
+/* Затемняющий фон под проигрывателем */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000;
+  z-index: 999;
+  pointer-events: none;
+}

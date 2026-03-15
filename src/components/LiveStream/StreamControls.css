@@ -1,0 +1,33 @@
+.stream-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.control-button {
+  padding: 10px 16px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--bg-tertiary);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 14px;
+  transition: all var(--transition);
+}
+
+.control-button:hover:not(:disabled) {
+  background: var(--bg-tertiary);
+  border-color: var(--color-primary);
+}
+
+.control-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-text {
+  color: var(--color-error);
+  font-size: 13px;
+  margin-left: 8px;
+}
