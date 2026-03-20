@@ -3,10 +3,23 @@ import { StreamStatus } from '../types/stream.types';
 
 export const streamService = {
   async getStreamStatus(streamName: string): Promise<StreamStatus> {
-    const response = await apiClient.get(`/v3/paths/get/${streamName}`, {
+    const response = await apiClient.get('/api/paths/list', {
       headers: { 'Authorization': `Basic ${localStorage.getItem('auth_token')}` },
     });
-    return response.data;
+    
+    const stream = response.data.items?.find((item: any) => item.name === streamName);
+    
+    if (!stream) {
+      throw new Error(`Stream "${streamName}" not found`);
+    }
+    
+    return {
+      name: stream.name,
+      ready: stream.ready,
+      online: stream.online,
+      tracks: stream.tracks || [],
+      readers: stream.readers || [],
+    };
   },
 
   async restartStream(streamName: string): Promise<void> {

@@ -41,9 +41,6 @@ export const StreamStatus: React.FC = () => {
       <span className={`status-indicator ${status?.online ? 'online' : 'offline'}`}>
         {status?.online ? '● В эфире' : '● Оффлайн'}
       </span>
-      {status?.viewers !== undefined && (
-        <span className="viewers">👁️ {status.viewers} зрителей</span>
-      )}
     </div>
   );
 };

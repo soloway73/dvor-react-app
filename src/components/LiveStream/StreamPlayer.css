@@ -3,6 +3,7 @@
   background: var(--bg-tertiary);
   border-radius: var(--border-radius);
   overflow: hidden;
+  position: relative;
 }
 
 .video-element {
@@ -10,8 +11,49 @@
   height: auto;
   display: block;
   max-height: 70vh;
+  filter: none !important;
+  opacity: 1 !important;
+  background: transparent !important;
+  -webkit-filter: none !important;
+  -moz-filter: none !important;
+  -ms-filter: none !important;
+  filter: progid:DXImageTransform.Microsoft.BasicImage(opacity=1) !important;
+  color-interpolation-filters: sRGB !important;
+  -webkit-color-correction: default !important;
 }
 
+/* Убираем затемнение с нативных контролов */
 .video-element::-webkit-media-controls {
-  background: rgba(0, 0, 0, 0.7);
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
+}
+
+.video-element::-webkit-media-controls-panel {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
+}
+
+.video-element::-webkit-media-controls-play-button {
+  background: transparent !important;
+}
+
+/* Убираем затемнение с video элемента напрямую */
+.video-element::-webkit-media-controls-overlay {
+  background: transparent !important;
+  display: none !important;
+}
+
+/* Для Firefox */
+.video-element::-moz-media-controls {
+  background: transparent !important;
+}
+
+/* Принудительно убираем любые оверлеи */
+.video-element::-webkit-media-controls-enclosure {
+  background: transparent !important;
 }

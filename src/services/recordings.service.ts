@@ -3,7 +3,7 @@ import { Recording } from '../types/recordings.types';
 
 export const recordingsService = {
   async getRecordings(streamName?: string, date?: string): Promise<Recording[]> {
-    let url = '/recordings/';
+    let url = '/api/recordings/';
     if (streamName) {
       url += `${streamName}/`;
     }
@@ -29,7 +29,7 @@ export const recordingsService = {
       return this.filterByDate(allRecordings, date);
     }
 
-    const recordings = this.parseJsonRecordings(data, streamName || '');
+    const recordings = this.parseJsonRecordings(data, streamName);
     return this.filterByDate(recordings, date);
   },
 
@@ -49,7 +49,7 @@ export const recordingsService = {
     if (!Array.isArray(data)) return [];
 
     return data
-      .filter((item: any) => item.type === 'file' && item.name.endsWith('.mp4'))
+      .filter((item: any) => item.type === 'file' && (item.name.endsWith('.mp4') || item.name.endsWith('.mp4.mp4')))
       .map((item: any) => {
         const dateMatch = item.name.match(/(\d{4}-\d{2}-\d{2})_(\d{2}-\d{2}-\d{2})/);
         return {
@@ -64,16 +64,15 @@ export const recordingsService = {
   },
 
   async deleteRecording(path: string): Promise<void> {
-    await apiClient.delete(`/recordings/${path}`);
+    await apiClient.delete(`/api/recordings/${path}`);
   },
 
   getRecordingUrl(path: string, withAuth: boolean = true): string {
     const token = localStorage.getItem('auth_token');
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
-    // Добавляем токен авторизации как query параметр (для скачивания)
     if (withAuth && token) {
-      return `${baseUrl}/recordings/${path}?token=${token}`;
+      return `${baseUrl}/api/recordings/${path}?token=${token}`;
     }
-    return `${baseUrl}/recordings/${path}`;
+    return `${baseUrl}/api/recordings/${path}`;
   },
 };

@@ -6,14 +6,30 @@ import { RecordingsFilters } from './RecordingsFilters';
 import { Loader } from '../UI/Loader';
 import './RecordingsList.css';
 
-const AVAILABLE_STREAMS = ['stream', 'react-stream'];
-
 export const RecordingsList: React.FC = () => {
   const [recordings, setRecordings] = useState<Recording[]>([]);
   const [loading, setLoading] = useState(true);
+  const [availableStreams, setAvailableStreams] = useState<string[]>([]);
   const [selectedStream, setSelectedStream] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Загружаем список доступных потоков
+  useEffect(() => {
+    const loadStreams = async () => {
+      try {
+        const data = await recordingsService.getRecordings();
+        const streams = data.map(r => r.streamName).filter(Boolean) as string[];
+        setAvailableStreams(streams);
+        if (streams.length > 0 && !selectedStream) {
+          setSelectedStream(streams[0]);
+        }
+      } catch (e) {
+        console.error('[RecordingsList] Failed to load streams:', e);
+      }
+    };
+    loadStreams();
+  }, []);
 
   const loadRecordings = async () => {
     setLoading(true);
@@ -31,7 +47,9 @@ export const RecordingsList: React.FC = () => {
   };
 
   useEffect(() => {
-    loadRecordings();
+    if (selectedStream) {
+      loadRecordings();
+    }
   }, [selectedStream, selectedDate]);
 
   // Блокируем прокрутку и наведение фона когда проигрыватель открыт
@@ -54,7 +72,7 @@ export const RecordingsList: React.FC = () => {
   return (
     <div className="recordings-list">
       <RecordingsFilters
-        streams={AVAILABLE_STREAMS}
+        streams={availableStreams}
         selectedStream={selectedStream}
         selectedDate={selectedDate}
         onStreamChange={setSelectedStream}
