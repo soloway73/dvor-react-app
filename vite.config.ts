@@ -5,6 +5,7 @@ import path from 'path';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: './',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -14,15 +15,15 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://87.76.15.163:8081',
+        target: 'https://api.solowaystudio.ru',
         changeOrigin: true,
       },
       '/hls': {
-        target: 'http://87.76.15.163:8081',
+        target: 'https://api.solowaystudio.ru',
         changeOrigin: true,
       },
       '/recordings': {
-        target: 'http://87.76.15.163:8081',
+        target: 'https://api.solowaystudio.ru',
         changeOrigin: true,
       },
     },

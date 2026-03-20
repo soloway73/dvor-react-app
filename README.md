@@ -103,18 +103,19 @@ dvor-react-app/
 ## ⚙️ Переменные окружения
 
 ```env
-VITE_API_BASE_URL=http://87.76.15.163:8081
-VITE_HLS_STREAM_URL=http://87.76.15.163:8081/hls/stream.m3u8
-VITE_RECORDINGS_URL=http://87.76.15.163:8081/recordings/
-VITE_API_VERSION=v3
+VITE_API_BASE_URL=https://api.solowaystudio.ru/dvor
+VITE_HLS_STREAM_URL=https://api.solowaystudio.ru/dvor/hls/stream/index.m3u8
+VITE_RECORDINGS_URL=https://api.solowaystudio.ru/dvor/recordings/
+VITE_API_VERSION=
 ```
 
 ## 📦 API Endpoints
 
-- `/api/v3/paths/list` - Список путей
-- `/api/v3/paths/get?name=stream` - Статус пути
-- `/hls/stream.m3u8` - HLS поток
-- `/recordings/` - Записи
+- `/dvor/api/paths/list` - Список путей
+- `/dvor/api/paths/get?name=stream` - Статус пути
+- `/dvor/hls/stream/index.m3u8` - HLS поток
+- `/dvor/recordings/` - Записи
+- `/dvor/api/recordings` - API записей
 
 ## 🎨 Стилизация
 

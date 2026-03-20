@@ -9,13 +9,14 @@ export const recordingsService = {
     }
 
     const response = await apiClient.get(url, {
-      params: date ? { date } : {},
-      responseType: 'text',
+      responseType: 'json',
     });
+
+    const data = response.data;
 
     // Если нет streamName, сначала получаем список папок, затем рекурсивно загружаем из каждой
     if (!streamName) {
-      const folders = this.parseNginxFolders(response.data);
+      const folders = this.parseJsonFolders(data);
       const allRecordings: Recording[] = [];
       for (const folder of folders) {
         try {
@@ -25,47 +26,41 @@ export const recordingsService = {
           console.error('[RecordingsService] Failed to load folder:', folder, e);
         }
       }
-      return allRecordings;
+      return this.filterByDate(allRecordings, date);
     }
 
-    return this.parseNginxIndex(response.data, streamName || '');
+    const recordings = this.parseJsonRecordings(data, streamName || '');
+    return this.filterByDate(recordings, date);
   },
 
-  parseNginxFolders(html: string): string[] {
-    const folders: string[] = [];
-    const regex = /<a href="([^/]+\/)">[^<]+\/<\/a>/gi;
-    let match;
-
-    while ((match = regex.exec(html)) !== null) {
-      const folderName = match[1].slice(0, -1); // remove trailing /
-      if (folderName !== '..' && folderName !== '') {
-        folders.push(folderName);
-      }
-    }
-
-    return folders;
+  filterByDate(recordings: Recording[], date?: string): Recording[] {
+    if (!date) return recordings;
+    return recordings.filter((rec) => rec.createdAt.startsWith(date));
   },
 
-  parseNginxIndex(html: string, basePath: string): Recording[] {
-    const recordings: Recording[] = [];
-    const regex = /<a href="([^"]+\.mp4[^"]*)">([^<]+\.mp4)<\/a>/gi;
-    let match;
+  parseJsonFolders(data: any): string[] {
+    if (!Array.isArray(data)) return [];
+    return data
+      .filter((item: any) => item.type === 'directory')
+      .map((item: any) => item.name);
+  },
 
-    while ((match = regex.exec(html)) !== null) {
-      const [, href, name] = match;
-      const dateMatch = name.match(/(\d{4}-\d{2}-\d{2})_(\d{2}-\d{2}-\d{2})/);
+  parseJsonRecordings(data: any, basePath: string): Recording[] {
+    if (!Array.isArray(data)) return [];
 
-      recordings.push({
-        id: href,
-        path: basePath ? `${basePath}/${href}` : href,
-        filename: name,
-        size: 0,
-        createdAt: dateMatch ? `${dateMatch[1]}T${dateMatch[2].replace(/-/g, ':')}` : '',
-        streamName: basePath,
+    return data
+      .filter((item: any) => item.type === 'file' && item.name.endsWith('.mp4'))
+      .map((item: any) => {
+        const dateMatch = item.name.match(/(\d{4}-\d{2}-\d{2})_(\d{2}-\d{2}-\d{2})/);
+        return {
+          id: item.name,
+          path: basePath ? `${basePath}/${item.name}` : item.name,
+          filename: item.name,
+          size: item.size || 0,
+          createdAt: dateMatch ? `${dateMatch[1]}T${dateMatch[2].replace(/-/g, ':')}` : (item.mtime || ''),
+          streamName: basePath,
+        };
       });
-    }
-
-    return recordings;
   },
 
   async deleteRecording(path: string): Promise<void> {
@@ -77,7 +72,7 @@ export const recordingsService = {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
     // Добавляем токен авторизации как query параметр (для скачивания)
     if (withAuth && token) {
-      return `${baseUrl}/recordings/${path}?auth=${token}`;
+      return `${baseUrl}/recordings/${path}?token=${token}`;
     }
     return `${baseUrl}/recordings/${path}`;
   },

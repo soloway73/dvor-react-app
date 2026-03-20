@@ -3,14 +3,13 @@ import { Header } from '../components/Layout/Header';
 import { StreamPlayer } from '../components/LiveStream/StreamPlayer';
 import { StreamStatus } from '../components/LiveStream/StreamStatus';
 import { StreamControls } from '../components/LiveStream/StreamControls';
-import { STREAM_NAME } from '../utils/constants';
 import './LivePage.css';
 
 export const LivePage: React.FC = () => {
   const authToken = localStorage.getItem('auth_token');
   const [key, setKey] = useState(0);
 
-  const streamUrl = `${import.meta.env.VITE_API_BASE_URL}/hls/${STREAM_NAME}.m3u8`;
+  const streamUrl = import.meta.env.VITE_HLS_STREAM_URL;
 
   const handleRefresh = () => {
     setKey((prev) => prev + 1);

@@ -16,7 +16,7 @@ export const streamService = {
   },
 
   async listPaths(): Promise<any> {
-    const response = await apiClient.get('/api/v3/paths/list');
+    const response = await apiClient.get('/api/paths/list');
     return response.data;
   },
 };

@@ -5,9 +5,9 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export const authService = {
   async validateCredentials(username: string, password: string): Promise<boolean> {
     const token = btoa(`${username}:${password}`);
-    
+
     try {
-      const response = await fetch(`${BASE_URL}/api/v3/paths/list`, {
+      const response = await fetch(`${BASE_URL}/api/paths/list`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${token}`,
