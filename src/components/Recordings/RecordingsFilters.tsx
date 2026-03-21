@@ -4,18 +4,26 @@ import './RecordingsFilters.css';
 interface RecordingsFiltersProps {
   streams: string[];
   selectedStream: string;
-  selectedDate: string;
+  dateFrom: string;
+  dateTo: string;
+  sortOrder: 'newest' | 'oldest';
   onStreamChange: (stream: string) => void;
-  onDateChange: (date: string) => void;
+  onDateFromChange: (date: string) => void;
+  onDateToChange: (date: string) => void;
+  onSortOrderChange: (order: 'newest' | 'oldest') => void;
   onRefresh: () => void;
 }
 
 export const RecordingsFilters: React.FC<RecordingsFiltersProps> = ({
   streams,
   selectedStream,
-  selectedDate,
+  dateFrom,
+  dateTo,
+  sortOrder,
   onStreamChange,
-  onDateChange,
+  onDateFromChange,
+  onDateToChange,
+  onSortOrderChange,
   onRefresh,
 }) => {
   const today = new Date().toISOString().split('T')[0];
@@ -38,26 +46,52 @@ export const RecordingsFilters: React.FC<RecordingsFiltersProps> = ({
         </select>
       </div>
 
+      <div className="filter-group filter-group-time">
+        <label>Период:</label>
+        <div className="time-range-inputs">
+          <input
+            type="datetime-local"
+            value={dateFrom}
+            onChange={(e) => onDateFromChange(e.target.value)}
+            max={dateTo || today}
+            className="filter-input"
+            placeholder="От"
+          />
+          <span className="time-separator">—</span>
+          <input
+            type="datetime-local"
+            value={dateTo}
+            onChange={(e) => onDateToChange(e.target.value)}
+            max={today}
+            min={dateFrom}
+            className="filter-input"
+            placeholder="До"
+          />
+        </div>
+      </div>
+
       <div className="filter-group">
-        <label>Дата:</label>
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={(e) => onDateChange(e.target.value)}
-          max={today}
-          className="filter-input"
-        />
+        <label>Сортировка:</label>
+        <select
+          value={sortOrder}
+          onChange={(e) => onSortOrderChange(e.target.value as 'newest' | 'oldest')}
+          className="filter-select"
+        >
+          <option value="newest">Сначала новые</option>
+          <option value="oldest">Сначала старые</option>
+        </select>
       </div>
 
       <button onClick={onRefresh} className="refresh-button">
         🔄 Обновить
       </button>
 
-      {(selectedStream || selectedDate) && (
+      {(selectedStream || dateFrom || dateTo) && (
         <button
           onClick={() => {
             onStreamChange('');
-            onDateChange('');
+            onDateFromChange('');
+            onDateToChange('');
           }}
           className="clear-button"
         >

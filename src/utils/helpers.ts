@@ -27,7 +27,9 @@ export function formatDate(dateString: string): string {
 }
 
 export function formatDateTime(dateString: string): string {
+  // Время в createdAt - UTC. Добавляем 4 часа для Самары (UTC+4)
   const date = new Date(dateString);
+  date.setHours(date.getHours() + 4);
   return date.toLocaleString('ru-RU', {
     year: 'numeric',
     month: '2-digit',
@@ -35,4 +37,16 @@ export function formatDateTime(dateString: string): string {
     hour: '2-digit',
     minute: '2-digit',
   });
+}
+
+/**
+ * Конвертирует локальную дату (Самара UTC+4) в UTC для сравнения с createdAt
+ */
+export function localToUtc(dateString: string): Date {
+  // dateString из datetime-local input - это локальное время без timezone
+  // Считаем что это время Самары (UTC+4) и конвертируем в UTC
+  const date = new Date(dateString);
+  // Вычитаем 4 часа чтобы получить UTC
+  date.setHours(date.getHours() - 4);
+  return date;
 }

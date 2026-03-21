@@ -49,7 +49,7 @@ export const recordingsService = {
     if (!Array.isArray(data)) return [];
 
     return data
-      .filter((item: any) => item.type === 'file' && (item.name.endsWith('.mp4') || item.name.endsWith('.mp4.mp4')))
+      .filter((item: any) => item.type === 'file' && item.name.endsWith('.mp4'))
       .map((item: any) => {
         const dateMatch = item.name.match(/(\d{4}-\d{2}-\d{2})_(\d{2}-\d{2}-\d{2})/);
         return {

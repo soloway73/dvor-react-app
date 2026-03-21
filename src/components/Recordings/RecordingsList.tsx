@@ -4,6 +4,7 @@ import { Recording } from '../../types/recordings.types';
 import { RecordingItem } from './RecordingItem';
 import { RecordingsFilters } from './RecordingsFilters';
 import { Loader } from '../UI/Loader';
+import { localToUtc } from '../../utils/helpers';
 import './RecordingsList.css';
 
 export const RecordingsList: React.FC = () => {
@@ -11,7 +12,9 @@ export const RecordingsList: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [availableStreams, setAvailableStreams] = useState<string[]>([]);
   const [selectedStream, setSelectedStream] = useState('');
-  const [selectedDate, setSelectedDate] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Загружаем список доступных потоков
@@ -19,7 +22,8 @@ export const RecordingsList: React.FC = () => {
     const loadStreams = async () => {
       try {
         const data = await recordingsService.getRecordings();
-        const streams = data.map(r => r.streamName).filter(Boolean) as string[];
+        // Используем Set для получения уникальных имён потоков
+        const streams = [...new Set(data.map(r => r.streamName).filter(Boolean))];
         setAvailableStreams(streams);
         if (streams.length > 0 && !selectedStream) {
           setSelectedStream(streams[0]);
@@ -34,11 +38,34 @@ export const RecordingsList: React.FC = () => {
   const loadRecordings = async () => {
     setLoading(true);
     try {
-      const data = await recordingsService.getRecordings(
-        selectedStream || undefined,
-        selectedDate || undefined
-      );
-      setRecordings(data);
+      const data = await recordingsService.getRecordings(selectedStream || undefined);
+
+      // Фильтрация по временному диапазону
+      // dateFrom и dateTo - локальное время (Самара), конвертируем в UTC для сравнения
+      let filtered = data;
+      if (dateFrom) {
+        const fromDateUtc = localToUtc(dateFrom);
+        filtered = filtered.filter(rec => {
+          const recDate = new Date(rec.createdAt);
+          return recDate >= fromDateUtc;
+        });
+      }
+      if (dateTo) {
+        const toDateUtc = localToUtc(dateTo);
+        filtered = filtered.filter(rec => {
+          const recDate = new Date(rec.createdAt);
+          return recDate <= toDateUtc;
+        });
+      }
+
+      // Сортировка
+      const sorted = [...filtered].sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+      });
+
+      setRecordings(sorted);
     } catch (error) {
       console.error('Failed to load recordings:', error);
     } finally {
@@ -50,7 +77,7 @@ export const RecordingsList: React.FC = () => {
     if (selectedStream) {
       loadRecordings();
     }
-  }, [selectedStream, selectedDate]);
+  }, [selectedStream, dateFrom, dateTo, sortOrder]);
 
   // Блокируем прокрутку и наведение фона когда проигрыватель открыт
   useEffect(() => {
@@ -74,9 +101,13 @@ export const RecordingsList: React.FC = () => {
       <RecordingsFilters
         streams={availableStreams}
         selectedStream={selectedStream}
-        selectedDate={selectedDate}
+        dateFrom={dateFrom}
+        dateTo={dateTo}
+        sortOrder={sortOrder}
         onStreamChange={setSelectedStream}
-        onDateChange={setSelectedDate}
+        onDateFromChange={setDateFrom}
+        onDateToChange={setDateTo}
+        onSortOrderChange={setSortOrder}
         onRefresh={loadRecordings}
       />
 
@@ -85,8 +116,8 @@ export const RecordingsList: React.FC = () => {
       ) : (
         <ul className="recordings">
           {recordings.map((recording) => (
-            <RecordingItem 
-              key={recording.id} 
+            <RecordingItem
+              key={recording.id}
               recording={recording}
               onModalOpen={() => setIsModalOpen(true)}
               onModalClose={() => setIsModalOpen(false)}

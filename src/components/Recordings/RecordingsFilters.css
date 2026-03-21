@@ -66,3 +66,23 @@
 .clear-button:hover {
   background: var(--bg-secondary);
 }
+
+/* Фильтр временного диапазона */
+.filter-group-time {
+  flex-direction: column;
+}
+
+.time-range-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-range-inputs .filter-input {
+  min-width: 160px;
+}
+
+.time-separator {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
