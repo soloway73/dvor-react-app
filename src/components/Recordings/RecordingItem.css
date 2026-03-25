@@ -49,6 +49,36 @@
   flex-shrink: 0;
 }
 
+@media (max-width: 768px) {
+  .recording-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .recording-info {
+    width: 100%;
+  }
+
+  .recording-name {
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .recording-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .action-button {
+    flex: 1;
+    justify-content: center;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+}
+
 .action-button {
   padding: 8px 16px;
   border: none;
