@@ -50,3 +50,14 @@ export function localToUtc(dateString: string): Date {
   date.setHours(date.getHours() - 4);
   return date;
 }
+
+/**
+ * Конвертирует UTC дату в локальное время (Самара UTC+4)
+ */
+export function utcToLocal(dateString: string): Date {
+  // dateString - это UTC время из имени файла
+  const date = new Date(dateString);
+  // Добавляем 4 часа для Самары
+  date.setHours(date.getHours() + 4);
+  return date;
+}
