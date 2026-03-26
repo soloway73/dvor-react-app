@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Hls, { HlsConfig } from 'hls.js';
 import './StreamPlayer.css';
 
@@ -6,16 +6,52 @@ interface StreamPlayerProps {
   streamUrl: string;
   autoPlay?: boolean;
   authToken?: string | null;
+  isReady?: boolean;
 }
 
 export const StreamPlayer: React.FC<StreamPlayerProps> = ({
   streamUrl,
   autoPlay = true,
   authToken,
+  isReady = true,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const playbackRateCheckRef = useRef<number | null>(null);
+  const [hlsError, setHlsError] = useState<string | null>(null);
+
+  // Сброс ошибки при изменении URL потока
+  useEffect(() => {
+    setHlsError(null);
+  }, [streamUrl]);
+
+  // Если поток не готов, показываем заглушку
+  if (!isReady) {
+    return (
+      <div className="stream-player">
+        <div className="stream-player-unavailable">
+          <div className="unavailable-icon">⚪</div>
+          <div className="unavailable-text">Поток недоступен</div>
+          <div className="unavailable-subtext">
+            Трансляция ещё не готова к воспроизведению
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Если есть ошибка HLS, показываем заглушку
+  if (hlsError) {
+    return (
+      <div className="stream-player">
+        <div className="stream-player-unavailable">
+          <div className="unavailable-icon">⚠️</div>
+          <div className="unavailable-text">Ошибка потока</div>
+          <div className="unavailable-subtext">{hlsError}</div>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     const video = videoRef.current;
@@ -136,19 +172,29 @@ export const StreamPlayer: React.FC<StreamPlayerProps> = ({
       hlsRef.current.on(Hls.Events.ERROR, (event, data) => {
         if (data.fatal) {
           console.error('HLS fatal error:', data);
-          // Автоматическое восстановление
+          
+          // Пробуем восстановиться только один раз
+          let recovered = false;
+          
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
               console.log('Network error, recovering...');
               hlsRef.current?.startLoad();
+              recovered = true;
               break;
             case Hls.ErrorTypes.MEDIA_ERROR:
               console.log('Media error, recovering...');
               hlsRef.current?.recoverMediaError();
+              recovered = true;
               break;
             default:
               console.error('Unrecoverable error');
               break;
+          }
+          
+          // Если не удалось восстановиться, показываем заглушку
+          if (!recovered) {
+            setHlsError('Не удалось подключиться к потоку');
           }
         }
       });

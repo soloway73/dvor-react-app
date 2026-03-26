@@ -82,15 +82,20 @@ export const StreamSelector: React.FC<StreamSelectorProps> = ({
         onChange={handleChange}
         className="stream-selector-dropdown"
       >
-        {streams.map((stream) => (
-          <option
-            key={stream.name}
-            value={stream.name}
-            disabled={!stream.online}
-          >
-            {stream.name} {stream.online ? '🔴' : '⚫'}
-          </option>
-        ))}
+        {streams.map((stream) => {
+          const isDisabled = !stream.online || !stream.ready;
+          const statusText = !stream.ready ? '⚪ Поток недоступен' : !stream.online ? '⚫ Оффлайн' : '🔴 В эфире';
+          return (
+            <option
+              key={stream.name}
+              value={stream.name}
+              disabled={isDisabled}
+              title={!stream.ready ? 'Поток ещё не готов к воспроизведению' : !stream.online ? 'Поток оффлайн' : ''}
+            >
+              {stream.name} {statusText}
+            </option>
+          );
+        })}
       </select>
     </div>
   );

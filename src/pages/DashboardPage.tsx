@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Header } from '../components/Layout/Header';
-import { StreamStatus } from '../components/LiveStream/StreamStatus';
 import './DashboardPage.css';
 
 export const DashboardPage: React.FC = () => {
@@ -16,7 +15,6 @@ export const DashboardPage: React.FC = () => {
             <div className="card-icon">🔴</div>
             <h2>Live Трансляция</h2>
             <p>Просмотр прямой трансляции с камеры</p>
-            <StreamStatus />
             <Link to="/live" className="card-button">
               Перейти к трансляции
             </Link>
@@ -29,6 +27,15 @@ export const DashboardPage: React.FC = () => {
             <Link to="/recordings" className="card-button">
               Просмотр записей
             </Link>
+          </div>
+
+          <div className="dashboard-card">
+            <div className="card-icon">🎸</div>
+            <h2>Уроки гитары</h2>
+            <p>для взрослых и детей</p>
+            <a href="https://solowaystudio.ru/" target="_blank" rel="noopener noreferrer" className="card-button">
+              Перейти на сайт
+            </a>
           </div>
 
           <div className="dashboard-card">
