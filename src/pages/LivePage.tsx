@@ -3,15 +3,24 @@ import { Header } from '../components/Layout/Header';
 import { StreamPlayer } from '../components/LiveStream/StreamPlayer';
 import { StreamStatus } from '../components/LiveStream/StreamStatus';
 import { StreamControls } from '../components/LiveStream/StreamControls';
+import { StreamSelector } from '../components/LiveStream/StreamSelector';
 import './LivePage.css';
 
 export const LivePage: React.FC = () => {
   const authToken = localStorage.getItem('auth_token');
   const [key, setKey] = useState(0);
+  const [selectedStream, setSelectedStream] = useState<string | null>(null);
 
-  const streamUrl = import.meta.env.VITE_HLS_STREAM_URL;
+  const streamUrl = selectedStream
+    ? `${import.meta.env.VITE_API_BASE_URL}/hls/${selectedStream}/index.m3u8`
+    : import.meta.env.VITE_HLS_STREAM_URL;
 
   const handleRefresh = () => {
+    setKey((prev) => prev + 1);
+  };
+
+  const handleStreamSelect = (streamName: string) => {
+    setSelectedStream(streamName);
     setKey((prev) => prev + 1);
   };
 
@@ -21,7 +30,13 @@ export const LivePage: React.FC = () => {
       <main className="live-content">
         <div className="live-header">
           <h1>🔴 Live Трансляция</h1>
-          <StreamStatus />
+          <div className="live-header-controls">
+            <StreamSelector
+              selectedStream={selectedStream}
+              onStreamSelect={handleStreamSelect}
+            />
+            <StreamStatus />
+          </div>
         </div>
 
         <div className="live-player-wrapper">

@@ -1,0 +1,60 @@
+.stream-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #1a1a2e;
+  border-radius: 8px;
+  border: 1px solid #2d2d44;
+}
+
+.stream-selector-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #e0e0e0;
+  white-space: nowrap;
+}
+
+.stream-selector-dropdown {
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  background: #2d2d44;
+  border: 1px solid #3d3d5c;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  min-width: 200px;
+}
+
+.stream-selector-dropdown:hover {
+  border-color: #5d5d8c;
+  background: #3d3d5c;
+}
+
+.stream-selector-dropdown:focus {
+  border-color: #6c63ff;
+  box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+}
+
+.stream-selector-dropdown:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.stream-selector-loading,
+.stream-selector-error,
+.stream-selector-no-streams {
+  font-size: 14px;
+  color: #a0a0a0;
+}
+
+.stream-selector-error {
+  color: #ff6b6b;
+}
+
+.stream-selector-no-streams {
+  color: #ffd93d;
+}

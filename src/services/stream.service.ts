@@ -1,18 +1,30 @@
 import apiClient from '../utils/axios';
-import { StreamStatus } from '../types/stream.types';
+import { StreamStatus, StreamInfo } from '../types/stream.types';
 
 export const streamService = {
+  async getStreams(): Promise<StreamInfo[]> {
+    const response = await apiClient.get('/api/paths/list', {
+      headers: { 'Authorization': `Basic ${localStorage.getItem('auth_token')}` },
+    });
+
+    return response.data.items?.map((item: any) => ({
+      name: item.name,
+      ready: item.ready,
+      online: item.online,
+    })) || [];
+  },
+
   async getStreamStatus(streamName: string): Promise<StreamStatus> {
     const response = await apiClient.get('/api/paths/list', {
       headers: { 'Authorization': `Basic ${localStorage.getItem('auth_token')}` },
     });
-    
+
     const stream = response.data.items?.find((item: any) => item.name === streamName);
-    
+
     if (!stream) {
       throw new Error(`Stream "${streamName}" not found`);
     }
-    
+
     return {
       name: stream.name,
       ready: stream.ready,

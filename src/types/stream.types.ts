@@ -16,3 +16,9 @@ export interface StreamStatus {
   tracks: Track[];
   readers: Reader[];
 }
+
+export interface StreamInfo {
+  name: string;
+  ready: boolean;
+  online: boolean;
+}
