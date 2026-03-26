@@ -23,10 +23,10 @@ export const StreamSelector: React.FC<StreamSelectorProps> = ({
         const data = await streamService.getStreams();
         setStreams(data);
         setError(null);
-        
+
         // Если есть потоки и ни один не выбран, выбираем первый онлайн
         if (data.length > 0 && !selectedStream) {
-          const onlineStream = data.find(s => s.online) || data[0];
+          const onlineStream = data.find((s) => s.online) || data[0];
           onStreamSelect(onlineStream.name);
         }
       } catch (err) {
@@ -84,13 +84,23 @@ export const StreamSelector: React.FC<StreamSelectorProps> = ({
       >
         {streams.map((stream) => {
           const isDisabled = !stream.online || !stream.ready;
-          const statusText = !stream.ready ? '⚪ Поток недоступен' : !stream.online ? '⚫ Оффлайн' : '🔴 В эфире';
+          const statusText = !stream.ready
+            ? '🔴 Поток недоступен'
+            : !stream.online
+            ? '⚫ Оффлайн'
+            : '🟢 В эфире';
           return (
             <option
               key={stream.name}
               value={stream.name}
               disabled={isDisabled}
-              title={!stream.ready ? 'Поток ещё не готов к воспроизведению' : !stream.online ? 'Поток оффлайн' : ''}
+              title={
+                !stream.ready
+                  ? 'Поток ещё не готов к воспроизведению'
+                  : !stream.online
+                  ? 'Поток оффлайн'
+                  : ''
+              }
             >
               {stream.name} {statusText}
             </option>

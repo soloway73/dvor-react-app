@@ -6,12 +6,20 @@ import './RecordingItem.css';
 
 interface RecordingItemProps {
   recording: Recording;
+  index: number;
+  allRecordings: Recording[];
+  currentIndex: number;
+  onIndexChange: (index: number) => void;
   onModalOpen?: () => void;
   onModalClose?: () => void;
 }
 
 export const RecordingItem: React.FC<RecordingItemProps> = ({
   recording,
+  index,
+  allRecordings,
+  currentIndex,
+  onIndexChange,
   onModalOpen,
   onModalClose,
 }) => {
@@ -19,9 +27,13 @@ export const RecordingItem: React.FC<RecordingItemProps> = ({
   const [videoUrl, setVideoUrl] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [navigationLoading, setNavigationLoading] = useState(false);
+
+  const isCurrentPlaying = currentIndex === index && playing;
 
   const handlePlay = async () => {
     setLoading(true);
+    onIndexChange(index);
 
     try {
       const token = localStorage.getItem('auth_token');
@@ -54,6 +66,55 @@ export const RecordingItem: React.FC<RecordingItemProps> = ({
       setLoading(false);
     }
   };
+
+  const handleNavigate = async (direction: 'prev' | 'next') => {
+    const newIndex = direction === 'prev' ? index - 1 : index + 1;
+    
+    if (newIndex < 0 || newIndex >= allRecordings.length) {
+      return;
+    }
+
+    setNavigationLoading(true);
+    onIndexChange(newIndex);
+
+    try {
+      const token = localStorage.getItem('auth_token');
+      const newRecording = allRecordings[newIndex];
+      const url = recordingsService.getRecordingUrl(newRecording.path, false);
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Basic ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        console.error(
+          '[RecordingItem] Failed to load video:',
+          response.status,
+          response.statusText
+        );
+        return;
+      }
+
+      const blob = await response.blob();
+      
+      // Revoke old URL to free memory
+      if (videoUrl) {
+        URL.revokeObjectURL(videoUrl);
+      }
+      
+      const blobUrl = URL.createObjectURL(blob);
+      setVideoUrl(blobUrl);
+    } catch (error) {
+      console.error('[RecordingItem] Navigation error:', error);
+    } finally {
+      setNavigationLoading(false);
+    }
+  };
+
+  const handlePrev = () => handleNavigate('prev');
+  const handleNext = () => handleNavigate('next');
 
   const handleDownload = async () => {
     setDownloading(true);
@@ -91,12 +152,16 @@ export const RecordingItem: React.FC<RecordingItemProps> = ({
 
   const handleClose = () => {
     setPlaying(false);
+    onIndexChange(-1);
     if (videoUrl) {
       URL.revokeObjectURL(videoUrl);
       setVideoUrl('');
     }
     onModalClose?.();
   };
+
+  const hasPrev = index > 0;
+  const hasNext = index < allRecordings.length - 1;
 
   return (
     <li className="recording-item">
@@ -120,10 +185,40 @@ export const RecordingItem: React.FC<RecordingItemProps> = ({
       {playing && (
         <div className="recording-player-modal" onClick={handleClose}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <video controls autoPlay src={videoUrl} className="modal-video" />
-            <button onClick={handleClose} className="close-button">
-              Закрыть
-            </button>
+            {navigationLoading && (
+              <div className="navigation-preloader">
+                <div className="preloader-spinner"></div>
+                <span>Загрузка видео...</span>
+              </div>
+            )}
+            <video 
+              controls 
+              autoPlay 
+              src={videoUrl} 
+              className="modal-video"
+              style={{ opacity: navigationLoading ? 0.3 : 1 }}
+            />
+            <div className="player-controls">
+              <button 
+                onClick={handlePrev} 
+                className="nav-button prev" 
+                disabled={!hasPrev || navigationLoading}
+                title="Предыдущее видео"
+              >
+                ◀️ Назад
+              </button>
+              <button onClick={handleClose} className="close-button">
+                Закрыть
+              </button>
+              <button 
+                onClick={handleNext} 
+                className="nav-button next" 
+                disabled={!hasNext || navigationLoading}
+                title="Следующее видео"
+              >
+                Вперёд ▶️
+              </button>
+            </div>
           </div>
         </div>
       )}

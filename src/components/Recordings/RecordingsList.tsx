@@ -5,6 +5,7 @@ import { RecordingItem } from './RecordingItem';
 import { RecordingsFilters } from './RecordingsFilters';
 import { Loader } from '../UI/Loader';
 import { localToUtc } from '../../utils/helpers';
+import { useRecordingsStore } from '../../store/recordings.store';
 import './RecordingsList.css';
 
 export const RecordingsList: React.FC = () => {
@@ -16,6 +17,8 @@ export const RecordingsList: React.FC = () => {
   const [dateTo, setDateTo] = useState('');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const { currentRecordingIndex, setCurrentRecordingIndex } = useRecordingsStore();
 
   // Загружаем список доступных потоков
   useEffect(() => {
@@ -115,10 +118,14 @@ export const RecordingsList: React.FC = () => {
         <div className="empty">Записей не найдено</div>
       ) : (
         <ul className="recordings">
-          {recordings.map((recording) => (
+          {recordings.map((recording, index) => (
             <RecordingItem
               key={recording.id}
               recording={recording}
+              index={index}
+              allRecordings={recordings}
+              currentIndex={currentRecordingIndex}
+              onIndexChange={setCurrentRecordingIndex}
               onModalOpen={() => setIsModalOpen(true)}
               onModalClose={() => setIsModalOpen(false)}
             />
