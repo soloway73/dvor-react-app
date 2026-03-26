@@ -7,6 +7,7 @@ interface RecordingsState {
   error: string | null;
   selectedStream: string;
   selectedDate: string;
+  currentRecordingIndex: number;
   setRecordings: (recordings: Recording[]) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -14,6 +15,7 @@ interface RecordingsState {
   setSelectedDate: (date: string) => void;
   addRecording: (recording: Recording) => void;
   removeRecording: (id: string) => void;
+  setCurrentRecordingIndex: (index: number) => void;
   reset: () => void;
 }
 
@@ -23,6 +25,7 @@ export const useRecordingsStore = create<RecordingsState>((set) => ({
   error: null,
   selectedStream: '',
   selectedDate: '',
+  currentRecordingIndex: -1,
 
   setRecordings: (recordings) => {
     set({ recordings, error: null });
@@ -52,6 +55,10 @@ export const useRecordingsStore = create<RecordingsState>((set) => ({
     set((state) => ({ recordings: state.recordings.filter((r) => r.id !== id) }));
   },
 
+  setCurrentRecordingIndex: (index) => {
+    set({ currentRecordingIndex: index });
+  },
+
   reset: () => {
     set({
       recordings: [],
@@ -59,6 +66,7 @@ export const useRecordingsStore = create<RecordingsState>((set) => ({
       error: null,
       selectedStream: '',
       selectedDate: '',
+      currentRecordingIndex: -1,
     });
   },
 }));
