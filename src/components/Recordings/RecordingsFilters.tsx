@@ -46,6 +46,18 @@ export const RecordingsFilters: React.FC<RecordingsFiltersProps> = ({
         </select>
       </div>
 
+      <div className="filter-group">
+        <label>Порядок:</label>
+        <select
+          value={sortOrder}
+          onChange={(e) => onSortOrderChange(e.target.value as 'newest' | 'oldest')}
+          className="filter-select"
+        >
+          <option value="newest">По убыванию</option>
+          <option value="oldest">По возрастанию</option>
+        </select>
+      </div>
+
       <div className="filter-group filter-group-time">
         <label>Период:</label>
         <div className="time-range-inputs">
@@ -68,18 +80,6 @@ export const RecordingsFilters: React.FC<RecordingsFiltersProps> = ({
             placeholder="До"
           />
         </div>
-      </div>
-
-      <div className="filter-group">
-        <label>Сортировка:</label>
-        <select
-          value={sortOrder}
-          onChange={(e) => onSortOrderChange(e.target.value as 'newest' | 'oldest')}
-          className="filter-select"
-        >
-          <option value="newest">Сначала новые</option>
-          <option value="oldest">Сначала старые</option>
-        </select>
       </div>
 
       <button onClick={onRefresh} className="refresh-button">

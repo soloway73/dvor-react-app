@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { recordingsService } from '../services/recordings.service';
-import { Recording } from '../types/recordings.types';
+import { Recording, PaginationParams } from '../types/recordings.types';
 
 interface UseRecordingsOptions {
   streamName?: string;
@@ -18,8 +18,12 @@ export const useRecordings = (options: UseRecordingsOptions = {}) => {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await recordingsService.getRecordings(streamName, date);
-      setRecordings(data);
+      const params: PaginationParams = {};
+      if (streamName) params.stream = streamName;
+      if (date) params.date = date;
+      
+      const response = await recordingsService.getRecordings(params);
+      setRecordings(response.data);
     } catch (err) {
       setError('Не удалось загрузить записи');
       console.error('Failed to fetch recordings:', err);
