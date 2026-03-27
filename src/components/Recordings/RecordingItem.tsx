@@ -68,8 +68,8 @@ export const RecordingItem: React.FC<RecordingItemProps> = ({
   };
 
   const handleNavigate = async (direction: 'prev' | 'next') => {
-    const newIndex = direction === 'prev' ? index - 1 : index + 1;
-    
+    const newIndex = direction === 'prev' ? currentIndex + 1 : currentIndex - 1;
+
     if (newIndex < 0 || newIndex >= allRecordings.length) {
       return;
     }
@@ -160,8 +160,8 @@ export const RecordingItem: React.FC<RecordingItemProps> = ({
     onModalClose?.();
   };
 
-  const hasPrev = index > 0;
-  const hasNext = index < allRecordings.length - 1;
+  const hasPrev = currentIndex < allRecordings.length - 1;
+  const hasNext = currentIndex > 0;
 
   return (
     <li className="recording-item">
